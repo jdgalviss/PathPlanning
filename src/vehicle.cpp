@@ -75,7 +75,7 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
                 way_too_close = true;
             }
             //check if car is too close
-            else if ((check_car_s > s) && ((check_car_s - s) < 15))
+            else if ((check_car_s > s) && ((check_car_s - s) < 20))
             {
                 too_close = true;
             }
