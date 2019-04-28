@@ -53,7 +53,7 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
     {
         s = end_path_s;
     }
-
+    double check_speed = 0.0;
     // Check all info from sensor fusion to determine if the velocity must be reduced
     for (unsigned int i = 0; i < predictions.size(); i++)
     {
@@ -65,7 +65,7 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
             //compute car's s coordinate
             double vx = predictions[i][3];
             double vy = predictions[i][4];
-            double check_speed = sqrt(vx * vx + vy * vy);
+            check_speed = sqrt(vx * vx + vy * vy);
             check_car_s = predictions[i][5];
             check_car_s += ((double)prev_size * 0.02 * check_speed);
 
@@ -75,9 +75,9 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
                 way_too_close = true;
             }
             //check if car is too close
-            else if ((check_car_s > s) && ((check_car_s - s) < 30))
+            else if ((check_car_s > s) && ((check_car_s - s) < 15))
             {
-                if(check_speed < this->v)
+                //if(check_speed < this->v)
                 too_close = true;
             }
         }
@@ -93,18 +93,21 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
     //Brake or accelerate depending on the sensor fusion data analyzed above
     if (way_too_close)
     {
+        double difference_velocities = check_speed - this->v;
+        double cmd_vel_change = difference_velocities * 0.02;
         std::cout << "way too close" << std::endl;
-        if (ref_velocity - 0.224 * 4.0 > 0.0)
-            ref_velocity -= 0.224 * 4.0;
+        if (ref_velocity + cmd_vel_change > 0.0)
+            ref_velocity += cmd_vel_change;
     }
     else
     {
         if (too_close)
         {
             std::cout << "too close" << std::endl;
-
-            if (ref_velocity - 0.224 * 1.0 > 0.0)
-                ref_velocity -= 0.224 * 1.0;
+            double difference_velocities = check_speed - this->v;
+            double cmd_vel_change = difference_velocities * 0.01;
+            if (ref_velocity + cmd_vel_change > 0.0)
+                ref_velocity += cmd_vel_change;
         }
         else
         {
@@ -113,8 +116,8 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
         }
     }
     if (crash_event)
-        if (ref_velocity - 0.224 * 1.5 > 0.0)
-            ref_velocity -= 0.224 * 1.5;
+        if (ref_velocity - 0.224 * 2.5 > 0.0)
+            ref_velocity -= 0.224 * 2.5;
 
     //Given the current state, detect which could be the possible successor states
     vector<string> successor_states_vector = successor_states();
@@ -131,7 +134,7 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
         //calculate cost for each given trajectory
         float actual_cost = calculate_cost(*this, predictions, path);
         costs.push_back(actual_cost);
-        std::cout << "    Possible state: " << successor_states_vector.at(i) << " - cost:" << actual_cost << std::endl;
+        std::cout << "    Possible Successor state: " << successor_states_vector.at(i) << " - cost:" << actual_cost << std::endl;
     }
     int min_cost = 0;
     //calculate index of minimum cost, so we can associate it to a given successor state and trajectory
@@ -330,7 +333,7 @@ trajectory Vehicle::lane_change_trajectory(string state,
     vector<trajectory> paths;
     float distance_ahead_step_size = 5.0f;
     float min_distance_ahead = 45.0f;
-    int num_distance_steps = 5;
+    int num_distance_steps = 3;
     int lane_goal = lane;
 
     //define goal_line depending on the state the trajectory is being generated for
@@ -366,7 +369,6 @@ trajectory Vehicle::lane_change_trajectory(string state,
 
     if (costs.size() > 0)
         min_cost = std::min_element(costs.begin(), costs.end()) - costs.begin();
-
 
     //return the trajectory that produces the minimum cost
     return paths.at(min_cost);

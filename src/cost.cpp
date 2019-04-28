@@ -29,7 +29,6 @@ bool get_vehicle_ahead(const Vehicle vehicle, const vector<vector<double>> &pred
         // Calculate the closest vehicle in front of my vehicle (same lane)
         if (lane_prediction == lane && vehicle.s < check_car_s_front && check_car_s_front < min_s)
         {
-
             min_s = check_car_s_front;
             ahead_vehicle = temp_vehicle;
             found_vehicle = true;
@@ -52,9 +51,9 @@ bool get_vehicle_behind(const Vehicle vehicle, const vector<vector<double>> &pre
         double check_speed_back = sqrt(vx_back * vx_back + vy_back * vy_back);
         double check_car_s_back = temp_vehicle[5] + 0.02 * check_speed_back * trajectory_size;
         int lane_prediction = floor(temp_vehicle[6] / 4.0);
-        if (lane_prediction == lane && vehicle.s > check_speed_back && check_speed_back > max_s)
+        if (lane_prediction == lane && vehicle.s > check_car_s_back && check_car_s_back > max_s)
         {
-            max_s = check_speed_back;
+            max_s = check_car_s_back;
             behind_vehicle = temp_vehicle;
             found_vehicle = true;
         }
@@ -89,7 +88,7 @@ float lane_speed(const vector<vector<double>> &predictions, const int lane,
     return lane_speed;
 }
 
-//cost function given by the distance to obstacles 
+//cost function given by the distance to obstacles
 //(used to define which lane change trajectory avoids in a more appropiate way, the vehicles that our car might crash with)
 float obstacle_cost(const Vehicle vehicle, const vector<vector<double>> &predictions, const trajectory &path)
 {
@@ -224,7 +223,8 @@ float crash_cost(const Vehicle vehicle, const vector<vector<double>> &prediction
         vx_front2 = front_vehicle2[3];
         vy_front2 = front_vehicle2[4];
         check_speed_front2 = sqrt(vx_front2 * vx_front2 + vy_front2 * vy_front2);
-        check_car_s_front2 = front_vehicle2[5]+ 0.02 * check_speed_front2 * path.points.at(0).size();;
+        check_car_s_front2 = front_vehicle2[5] + 0.02 * check_speed_front2 * path.points.at(0).size();
+        ;
         check_car_d_front2 = front_vehicle2[6];
     }
 
@@ -236,18 +236,23 @@ float crash_cost(const Vehicle vehicle, const vector<vector<double>> &prediction
 
     //calculate cost function only for lane changing states
     float min_dist = 75.0;
-    if(distance_back < min_dist)
+    if (distance_back < min_dist && distance_back < 15) //take vehicle in the back into account only if too cloes
+    {
         min_dist = distance_back;
-    if(distance_front2 < min_dist)
+    }
+
+    if (distance_front2 < min_dist && distance_front2 < 10)
+    {
         min_dist = distance_front2;
-    
+    }
+    //std::cout << "state: " << path.state << " - min_distance_back: " << distance_back << std::endl;
     if (path.state.compare("KL") != 0)
-        cost = 75.0 / (min_dist) - 1.0;
+        cost = 75.0 / (min_dist)-1.0;
     else
     {
         cost = 0.0;
     }
-    cost = cost >= 0.0 ? cost: 0.0;
+    cost = cost >= 0.0 ? cost : 0.0;
     return cost;
 }
 
@@ -279,7 +284,7 @@ float distance_to_front_cost(const Vehicle vehicle, const vector<vector<double>>
     double cost = 0.0;
     double distance_front = sqrt(pow(vehicle.s - check_car_s_front, 2.0));
     cost = 75.0 / distance_front - 1.0f;
-    cost = cost >= 0.0 ? cost: 0.0;
+    cost = cost >= 0.0 ? cost : 0.0;
     return cost;
 }
 
@@ -304,5 +309,5 @@ float calculate_cost(const Vehicle &vehicle,
     float distance_front_cost = distance_to_front_cost(vehicle, predictions, path);
 
     //total cost
-    return lane_speed_cost + distance_front_cost*0.5 + crash*3.5 + center_cost;
+    return lane_speed_cost + distance_front_cost * 0.1 + crash * 3.0 + center_cost;
 }
