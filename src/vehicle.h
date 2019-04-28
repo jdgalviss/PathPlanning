@@ -14,6 +14,7 @@ using std::vector;
 struct trajectory{
     vector<vector<double>> points;
     string  state;
+    int goal_lane;
 };
 
 class Vehicle {
@@ -61,13 +62,20 @@ class Vehicle {
   string state;
 
   //changes from here
+  //map values for waypoint's x,y,s and d normalized normal vectors
+    vector<double> map_waypoints_x;
+    vector<double> map_waypoints_y;
+    vector<double> map_waypoints_s;
+    vector<double> map_waypoints_dx;
+    vector<double> map_waypoints_dy;
+    double v, target_speed, a, max_acceleration, s, d, goal_s, goal_d, x, y, yaw, ref_velocity, end_path_s, end_path_d;
+
 
   private:
 
     vector<vector<double>> generate_spline_trajectory(float meters_ahead, int lane_goal, float ref_vel);
     
 
-    double v, target_speed, a, max_acceleration, s, d, goal_s, goal_d, x, y, yaw, ref_velocity, end_path_s, end_path_d;
 
     bool too_close = false;
 
@@ -75,12 +83,7 @@ class Vehicle {
 
     vector<double> previous_path_y;
 
-    //map values for waypoint's x,y,s and d normalized normal vectors
-    vector<double> map_waypoints_x;
-    vector<double> map_waypoints_y;
-    vector<double> map_waypoints_s;
-    vector<double> map_waypoints_dx;
-    vector<double> map_waypoints_dy;
+    
 
 };
 

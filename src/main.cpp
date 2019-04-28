@@ -75,7 +75,7 @@ int main()
 
       if (s != "")
       {
-        std::cout << "ref vel: " << ref_vel << std::endl;
+        //std::cout << "ref vel: " << ref_vel << std::endl;
         auto j = json::parse(s);
 
         string event = j[0].get<string>();
