@@ -75,7 +75,7 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
                 way_too_close = true;
             }
             //check if car is too close
-            else if ((check_car_s > s) && ((check_car_s - s) < 15))
+            else if ((check_car_s > s) && ((check_car_s - s) < 25))
             {
                 //if(check_speed < this->v)
                 too_close = true;
@@ -94,7 +94,7 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
     if (way_too_close)
     {
         double difference_velocities = check_speed - this->v;
-        double cmd_vel_change = difference_velocities * 0.02;
+        double cmd_vel_change = (difference_velocities * 0.02) < 0.224 ? (difference_velocities * 0.02) : 0.224;
         std::cout << "way too close" << std::endl;
         if (ref_velocity + cmd_vel_change > 0.0)
             ref_velocity += cmd_vel_change;
@@ -105,19 +105,19 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
         {
             std::cout << "too close" << std::endl;
             double difference_velocities = check_speed - this->v;
-            double cmd_vel_change = difference_velocities * 0.01;
+            double cmd_vel_change = (difference_velocities * 0.01) < 0.224 ? (difference_velocities * 0.01) : 0.224;
             if (ref_velocity + cmd_vel_change > 0.0)
                 ref_velocity += cmd_vel_change;
         }
         else
         {
-            if (ref_velocity + 0.224 * 2.5 < 49.5)
-                ref_velocity += 0.224 * 2.5;
+            if (ref_velocity + 0.224 < 49.5)
+                ref_velocity += 0.224;
         }
     }
     if (crash_event)
-        if (ref_velocity - 0.224 * 2.5 > 0.0)
-            ref_velocity -= 0.224 * 2.5;
+        if (ref_velocity - 0.224 > 0.0)
+            ref_velocity -= 0.224;
 
     //Given the current state, detect which could be the possible successor states
     vector<string> successor_states_vector = successor_states();
