@@ -35,11 +35,15 @@ Transitions between these states are handled by using the following weighted cos
 * Goal Lane free space (depending distance to next car)
 * Crash cost (when switching lanes it depends on the distance to the proximate vehicles in front and behind ur vehicle on the goal lane).
 * Center cost. This cost function returns cero when the vehicle is moving on the central lane and a constant value when it is not.
+* line cost: this cost is summed to the Keep Lane state when the car is on one of the road's division lines (we don't want the car to state on the line for too long, so we make it perform the lane change on ambiguous situations where keep lane cost and change lane cost are similar and the car is on the line).
 
 ## Trajectory generations
 In order to generate trajectories that perform  each one of the state's actions. i.e. keep the lane, change lane right or change lane left, [splines](http://kluge.in-chemnitz.de/opensource/spline/) are used.
 
 In the case of the ttrajectories for lane changing, a set of 5 trajectories is calculated, so that we have 5 options from which we can choose the best trajectory for lane change. This decision is based on the accumulate of the distance of each point of the trajectory to the nearest vehicles, we choose the trajectory with the smallest accumulate of distances.
+
+## Speed reduction
+When there is a car too close towards the front, our vehicle tries to match its speed with the vehicle in front by performing some sort of proportional control.
 
 ## Basic Build Instructions
 

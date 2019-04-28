@@ -104,8 +104,9 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
         if (too_close)
         {
             std::cout << "too close" << std::endl;
+            //try to reduce the speed of my vehicle to match the one of the front vehicle
             double difference_velocities = check_speed - this->v;
-            double cmd_vel_change = (difference_velocities * 0.01) < 0.224 ? (difference_velocities * 0.01) : 0.224;
+            double cmd_vel_change = (difference_velocities * 0.005) < 0.224 ? (difference_velocities * 0.005) : 0.224;
             if (ref_velocity + cmd_vel_change > 0.0)
                 ref_velocity += cmd_vel_change;
         }

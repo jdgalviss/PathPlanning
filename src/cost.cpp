@@ -308,6 +308,11 @@ float calculate_cost(const Vehicle &vehicle,
     //calculate cost associated with free space on goal lane
     float distance_front_cost = distance_to_front_cost(vehicle, predictions, path);
 
+    //cost of being in the middle lane, so the vehicle doesnt state on the lane for too long
+    float on_lane_cost = 0.0;
+    if(((vehicle.d >3.25 && vehicle.d <4.75) || (vehicle.d >7.75 && vehicle.d <8.25)) && (path.state.compare("KL") == 0) && vehicle.state.compare("KL") != 0 )
+        on_lane_cost = 20.0;
+
     //total cost
-    return lane_speed_cost + distance_front_cost * 0.1 + crash * 3.0 + center_cost;
+    return lane_speed_cost + distance_front_cost * 0.1 + crash * 3.0 + center_cost + on_lane_cost;
 }
