@@ -75,7 +75,7 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
                 way_too_close = true;
             }
             //check if car is too close
-            else if ((check_car_s > s) && ((check_car_s - s) < 20))
+            else if ((check_car_s > s) && ((check_car_s - s) < 25))
             {
                 too_close = true;
             }
@@ -327,7 +327,7 @@ trajectory Vehicle::lane_change_trajectory(string state,
     //Generate a series of paths that take the vehicle to the goal_lane and compute their cost
     vector<trajectory> paths;
     float distance_ahead_step_size = 5.0f;
-    float min_distance_ahead = 35.0f;
+    float min_distance_ahead = 40.0f;
     int num_distance_steps = 5;
     int lane_goal = lane;
 

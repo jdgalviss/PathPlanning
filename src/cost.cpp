@@ -235,8 +235,14 @@ float crash_cost(const Vehicle vehicle, const vector<vector<double>> &prediction
     double distance_front2 = sqrt(pow(vehicle.s - check_car_s_front2, 2.0));
 
     //calculate cost function only for lane changing states
+    float min_dist = 75.0;
+    if(distance_back < min_dist)
+        min_dist = distance_back;
+    if(distance_front2 < min_dist)
+        min_dist = distance_front2;
+    
     if (path.state.compare("KL") != 0)
-        cost = 150.0 / (distance_back + distance_front2) - 1.0;
+        cost = 75.0 / (min_dist) - 1.0;
     else
     {
         cost = 0.0;
@@ -298,5 +304,5 @@ float calculate_cost(const Vehicle &vehicle,
     float distance_front_cost = distance_to_front_cost(vehicle, predictions, path);
 
     //total cost
-    return lane_speed_cost + distance_front_cost*0.5 + crash + center_cost;
+    return lane_speed_cost + distance_front_cost*0.5 + crash*2.0 + center_cost;
 }
