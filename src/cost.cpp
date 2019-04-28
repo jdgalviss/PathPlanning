@@ -304,5 +304,5 @@ float calculate_cost(const Vehicle &vehicle,
     float distance_front_cost = distance_to_front_cost(vehicle, predictions, path);
 
     //total cost
-    return lane_speed_cost + distance_front_cost*0.5 + crash*3.0 + center_cost;
+    return lane_speed_cost + distance_front_cost*0.5 + crash*3.5 + center_cost;
 }
