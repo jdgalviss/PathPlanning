@@ -75,8 +75,9 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
                 way_too_close = true;
             }
             //check if car is too close
-            else if ((check_car_s > s) && ((check_car_s - s) < 25))
+            else if ((check_car_s > s) && ((check_car_s - s) < 30))
             {
+                if(check_speed < this->v)
                 too_close = true;
             }
         }
@@ -93,8 +94,8 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
     if (way_too_close)
     {
         std::cout << "way too close" << std::endl;
-        if (ref_velocity - 0.224 * 2.0 > 0.0)
-            ref_velocity -= 0.224 * 2.0;
+        if (ref_velocity - 0.224 * 4.0 > 0.0)
+            ref_velocity -= 0.224 * 4.0;
     }
     else
     {
@@ -102,8 +103,8 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
         {
             std::cout << "too close" << std::endl;
 
-            if (ref_velocity - 0.224 * 0.8 > 0.0)
-                ref_velocity -= 0.224 * 0.8;
+            if (ref_velocity - 0.224 * 1.0 > 0.0)
+                ref_velocity -= 0.224 * 1.0;
         }
         else
         {
@@ -137,6 +138,7 @@ trajectory Vehicle::choose_next_state(vector<vector<double>> &predictions)
     if (costs.size() > 1)
     {
         min_cost = std::min_element(costs.begin(), costs.end()) - costs.begin();
+        //min_cost = 0;
     }
     //update current state
     this->state = paths.at(min_cost).state;
@@ -327,7 +329,7 @@ trajectory Vehicle::lane_change_trajectory(string state,
     //Generate a series of paths that take the vehicle to the goal_lane and compute their cost
     vector<trajectory> paths;
     float distance_ahead_step_size = 5.0f;
-    float min_distance_ahead = 40.0f;
+    float min_distance_ahead = 45.0f;
     int num_distance_steps = 5;
     int lane_goal = lane;
 

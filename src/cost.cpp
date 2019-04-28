@@ -298,11 +298,11 @@ float calculate_cost(const Vehicle &vehicle,
     float crash = crash_cost(vehicle, predictions, path);
 
     //Associate cost to not being in the center lane
-    float center_cost = (path.goal_lane == 1) ? 0.0 : 0.25;
+    float center_cost = (path.goal_lane == 1) ? 0.0 : 0.1;
 
     //calculate cost associated with free space on goal lane
     float distance_front_cost = distance_to_front_cost(vehicle, predictions, path);
 
     //total cost
-    return lane_speed_cost + distance_front_cost*0.5 + crash*2.0 + center_cost;
+    return lane_speed_cost + distance_front_cost*0.5 + crash*3.0 + center_cost;
 }
